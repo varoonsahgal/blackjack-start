@@ -35,9 +35,9 @@ public class ConsoleCard {
                         .cursorRight(12)
                         .a("┌─────────┐").cursorDown(1).cursorLeft(11)
                         .a("│░░░░░░░░░│").cursorDown(1).cursorLeft(11)
-                        .a("│░ J I T ░│").cursorDown(1).cursorLeft(11)
-                        .a("│░ T E R ░│").cursorDown(1).cursorLeft(11)
-                        .a("│░ T E D ░│").cursorDown(1).cursorLeft(11)
+                        .a("│░ I N T ░│").cursorDown(1).cursorLeft(11)
+                        .a("│░ T U I ░│").cursorDown(1).cursorLeft(11)
+                        .a("│░    T  ░│").cursorDown(1).cursorLeft(11)
                         .a("│░░░░░░░░░│").cursorDown(1).cursorLeft(11)
                         .a("└─────────┘"));
     }
