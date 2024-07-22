@@ -1,21 +1,22 @@
 package com.intuit.blackjack.domain;
 
+import com.intuit.blackjack.config.GameConfig;
 import com.intuit.blackjack.domain.port.GameMonitor;
 
 public class Game {
 
     private final Deck deck;
-
     private final Hand dealerHand = new Hand();
     private final Hand playerHand = new Hand();
-
     private boolean playerDone;
+    private GameMonitor gameMonitor;
+    private int minimumBet;
+    private int bet;  // Add an internal bet field
 
-    public Game(Deck deck) {
+    public Game(Deck deck)
+    {
         this.deck = deck;
     }
-
-    private GameMonitor gameMonitor;
 
     public Game(Deck deck, GameMonitor gameMonitor) {
         this.deck = deck;
@@ -23,7 +24,29 @@ public class Game {
         // assign Deck & GameMonitor to private final fields
     }
 
+
+    public Game(Deck deck, GameMonitor gameMonitor, GameConfig gameConfig) {
+        this.deck = deck;
+        this.gameMonitor = gameMonitor;
+        this.minimumBet = gameConfig.getMinimumBet();
+    }
+
+    public void setBet(int bet) {
+        if (bet < minimumBet) {
+            throw new IllegalArgumentException("Bet must be at least " + minimumBet);
+        }
+        this.bet = bet;
+    }
+
+    public void reset() {
+        this.playerHand.clear();
+        this.dealerHand.clear();
+        playerDone = false;
+        //this.deck.shuffle(); // Re-shuffle the deck when resetting the game state
+    }
+
     public void initialDeal() {
+        // The bet validation has been moved to the setBet method
         dealRoundOfCards();
         dealRoundOfCards();
         if (playerHand.hasBlackjack()) {
@@ -32,7 +55,6 @@ public class Game {
     }
 
     private void dealRoundOfCards() {
-        // why: players first because this is the rule
         playerHand.drawFrom(deck);
         dealerHand.drawFrom(deck);
     }
@@ -54,29 +76,14 @@ public class Game {
     }
 
     public void dealerTurn() {
-        // Dealer makes its choice automatically based on a simple heuristic (<=16 must hit, =>17 must stand)
         if (!playerHand.isBusted()) {
             while (dealerHand.dealerMustDrawCard()) {
                 dealerHand.drawFrom(deck);
             }
         }
-        else
-            gameMonitor.roundCompleted(this);
-
-
+        gameMonitor.roundCompleted(this);
     }
 
-    // QUERY METHOD RULE
-    // ? -> Snapshot (point-in-time)
-    // ? -> PREVENT illegal change to state of Game
-    // Need: Hand's value, Hand's list of cards, and Hand's "face up" card
-    // 0. Hand - NO - it's mutable, and is not a snapshot
-    // 1. Copy/Clone - maybe - Is a snapshot, Prevent Illegal Access, but is Misleading
-    // 2. Limited Interface that Hand implements: only expose needed info "ReadOnlyHand"
-    //                  Solves illegal change, but is not a snapshot
-    // 3. DTO ("HandView") - data transfer object - NO - not allowed in Domain
-    // 3a. VALUE OBJECT ("HandView") - belongs in the domain
-    //              Created by Game (used only thru Game) or Hand (used elsewhere)
     public Hand playerHand() {
         return playerHand;
     }
@@ -85,25 +92,21 @@ public class Game {
         return dealerHand;
     }
 
-
     public void playerHits() {
         playerHand.drawFrom(deck);
         playerDone = playerHand.isBusted();
-        if(playerDone)
+        if (playerDone) {
             gameMonitor.roundCompleted(this);
-
+        }
     }
 
     public void playerStands() {
         playerDone = true;
         dealerTurn();
-        //at this point we KNOW that one round of blackjack has finished
         gameMonitor.roundCompleted(this);
     }
 
     public boolean isPlayerDone() {
         return playerDone;
     }
-
-
 }

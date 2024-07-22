@@ -1,56 +1,55 @@
 package com.intuit.blackjack.adapter.in.web;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import com.intuit.blackjack.domain.Game;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class BlackjackController {
 
-    //what should be a class field here??
-    // Game!!
-    private final Game game;
+    private final ApplicationContext applicationContext;
+    private Game game;
+    private int bet;
 
-    // Spring will pass in the game object
-    // for you here because we
-    // defined it as a Bean in BlackjackGameApplication.java
     @Autowired
-    public BlackjackController(Game game) {
-       this.game = game;
+    public BlackjackController(ApplicationContext applicationContext, Game game) {
+        this.applicationContext = applicationContext;
+        this.game = game;
     }
 
     @PostMapping("/start-game")
-    public String startGame() {
-        game.initialDeal();
-        return redirectBasedOnStateOfGame();
-        //what is the String that we return here?
-        // it's the URL that we want to go to
-
-        // after calling initial deal what do we need to do??
-        //could do a redirect if the player is done
-
+    public String startGame(@RequestParam int bet, Model model) {
+        try {
+            game.reset(); // Reset the game state before starting a new game
+            game.setBet(bet); // Set the bet before starting the game
+            game.initialDeal();
+            this.bet = bet; // Store the bet amount
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "index"; // Stay on index page if there's an error
+        }
+        return "redirect:/game";
     }
-
 
     @PostMapping("/hit")
     public String hit() {
-        game.playerHits();  //with Hex we can reuse the same domain object
-        //across different adapters - because our Console adapter
-        // can call the domain object the same way
+        game.playerHits();
         return redirectBasedOnStateOfGame();
     }
-
 
     @GetMapping("/done")
     public String doneView(Model model) {
         populateWithGameView(model);
-        model.addAttribute("outcome", game.determineOutcome().displayString());
+        model.addAttribute("outcome", game.determineOutcome()); // Pass the GameOutcome object
+        model.addAttribute("bet", bet); // Add the bet amount to the model
         return "done";
     }
+
 
     @PostMapping("/stand")
     public String standCommand() {
@@ -60,47 +59,24 @@ public class BlackjackController {
 
     @GetMapping("/game")
     public String gameView(Model model) {
-
-        //this updates the model which then gets consumed by the view
-        // which is Thymeleaf templates in this case
         populateWithGameView(model);
         return "blackjack";
+    }
 
+    @PostMapping("/startNewGame")
+    public String startNewGame() {
+        game.reset(); // Reset the game state for a new game
+        return "redirect:/"; // Redirect to the home page to start a new game
     }
 
     private void populateWithGameView(Model model) {
         model.addAttribute("gameView", GameView.of(game));
     }
 
-//    @GetMapping("/done")
-//    public String doneView(Model model) {
-//        populateWIthGameView(model)
-//        model.addAttribute()
-//        // after calling initial deal what do we need to do??
-//        //could do a redirect if the player is done
-//
-//    }
-
-    private String redirectBasedOnStateOfGame(){
-        if(game.isPlayerDone()) {
+    private String redirectBasedOnStateOfGame() {
+        if (game.isPlayerDone()) {
             return "redirect:/done";
         }
-        // if the player is still playing
-        // we want to be on a page called "game"
         return "redirect:/game";
     }
-
-
-
-
-
-    // you will need to update the Model and then reference that model
-    // from the Thymeleaf templates...
-
-    //how would we update the view
-    // we would return an html page?
-    // how is the view getting the updated data ie the update player cards/dealer
-    // cards...
-
-
 }

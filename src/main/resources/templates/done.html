@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
->
+      xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Blackjack</title>
@@ -16,16 +15,27 @@
 <h1>Game Over</h1>
 
 <h1>Dealer Cards</h1>
-<p th:each="card: ${gameView.dealerCards}" th:text="${card}">--</p>
+<p th:each="card : ${gameView.dealerCards}" th:text="${card}">--</p>
 
 <h1>Your Cards</h1>
-<p th:each="card: ${gameView.playerCards}" th:text="${card}">--</p>
+<p th:each="card : ${gameView.playerCards}" th:text="${card}">--</p>
 
 <br/>
 
 <h1>Outcome</h1>
+<h3 th:text="${outcome.displayString}">You win</h3>
 
-<h3 th:text="${outcome}">You win</h3>
+<h1>Result</h1>
+<p th:if="${outcome.name() == 'PLAYER_BUSTED'}">You lost your bet of <span th:text="${bet}"></span> units. Better luck next time!</p>
+<p th:if="${outcome.name() == 'DEALER_BUSTED'}">Congratulations! You won <span th:text="${bet * 2}"></span> units!</p>
+<p th:if="${outcome.name() == 'PLAYER_BEATS_DEALER'}">Congratulations! You won <span th:text="${bet * 2}"></span> units!</p>
+<p th:if="${outcome.name() == 'PLAYER_PUSHES'}">You broke even and kept your bet of <span th:text="${bet}"></span> units.</p>
+<p th:if="${outcome.name() == 'PLAYER_LOSES'}">You lost your bet of <span th:text="${bet}"></span> units. Better luck next time!</p>
+<p th:if="${outcome.name() == 'PLAYER_WINS_BLACKJACK'}">Congratulations! You won Blackjack and earned <span th:text="${bet * 2.5}"></span> units!</p>
+
+<form action="/startNewGame" method="post">
+    <button type="submit">Play new game</button>
+</form>
 
 </body>
 </html>

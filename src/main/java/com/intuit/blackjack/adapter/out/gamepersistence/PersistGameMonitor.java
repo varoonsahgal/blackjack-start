@@ -47,6 +47,9 @@ public class PersistGameMonitor implements GameMonitor {
     @Override
     public void roundCompleted(Game game){
 
+        //DTO - grab a subset of things from the game object
+        //namely, we want to grab whatever we want to send to the database
+
         System.out.println("in round completed in persistgamemonitor");
         GameOutcomeEntity gm = new GameOutcomeEntity("Varoon", "WIN", "13", "18");
 

@@ -1,9 +1,13 @@
 package com.intuit.blackjack.domain.port;
 
+import com.intuit.blackjack.config.GameConfig;
+
+
 // use these static imports in the test class
 import com.intuit.blackjack.domain.Deck;
 import com.intuit.blackjack.domain.Game;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -30,8 +34,12 @@ public class GameMonitorTest {
         //
         //Wondering if others saw this issue and what would be the best approach.
 
+
         // TODO: finish the rest of this setup...
-         Game game = new Game(new Deck(), gameMonitorSpy);
+        GameConfig gameConfig = new GameConfig();
+        gameConfig.setMinimumBet(10); // Set the minimum bet to match your application properties
+
+        Game game = new Game(new Deck(), gameMonitorSpy, gameConfig );
          game.initialDeal();
          game.playerStands(); //now roundCompleted will be called here b/c we added that code
 

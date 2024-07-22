@@ -9,14 +9,41 @@
             color: yellow;
             background-color: darkblue;
         }
+        h1, h3 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        input[type="number"] {
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: yellow;
+            color: darkblue;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: orange;
+        }
     </style>
 </head>
 <body>
 <h1>Welcome to Blackjack!</h1>
 
-<h3>To start playing, click START GAME</h3>
+<h3>To start playing, enter your bet amount and click START GAME</h3>
 
 <form action="/start-game" method="post">
+    <label for="bet">Enter your bet:</label>
+    <input type="number" id="bet" name="bet" min="10" required>
     <button>START GAME</button>
 </form>
 

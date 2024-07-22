@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Blackjack</title>
@@ -10,23 +8,42 @@
             color: yellow;
             background-color: darkblue;
         }
+        h1, h2 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: yellow;
+            color: darkblue;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: orange;
+        }
     </style>
 </head>
 <body>
 
 <h1>Dealer Cards</h1>
-<p th:each="card: ${gameView.dealerCards}" th:text="${card}">--</p>
+<p th:each="card : ${gameView.dealerCards}" th:text="${card}">--</p>
 
 <h1>Your Cards</h1>
-<p th:each="card: ${gameView.playerCards}" th:text="${card}">--</p>
+<p th:each="card : ${gameView.playerCards}" th:text="${card}">--</p>
 
 <br/>
 <h2>Hit or Stand?</h2>
 <form action="/hit" method="post">
-    <button value="HIT">Hit</button>
+    <button type="submit">Hit</button>
 </form>
 <form action="/stand" method="post">
-    <button value="STAND">Stand</button>
+    <button type="submit">Stand</button>
 </form>
 
 </body>
